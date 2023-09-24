@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:clock/clock.dart';
 import 'package:flutter_cache_manager/src/web/mime_converter.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 
 ///Flutter Cache Manager
 ///Copyright (c) 2019 Rene Floor
@@ -23,9 +24,12 @@ abstract class FileService {
 /// [WebHelper]. One can easily adapt it to use dio or any other http client.
 class HttpFileService extends FileService {
   final http.Client _httpClient;
+  final http.Client _ioClient;
 
   HttpFileService({http.Client? httpClient})
-      : _httpClient = httpClient ?? http.Client();
+      : _httpClient = httpClient ?? http.Client(),
+        _ioClient = IOClient()
+  ;
 
   @override
   Future<FileServiceResponse> get(String url,
@@ -34,7 +38,9 @@ class HttpFileService extends FileService {
     if (headers != null) {
       req.headers.addAll(headers);
     }
-    final httpResponse = await _httpClient.send(req);
+
+    final client = url.contains("127.0.0.1") ? _ioClient : _httpClient;
+    final httpResponse = await client.send(req);
 
     return HttpGetResponse(httpResponse);
   }

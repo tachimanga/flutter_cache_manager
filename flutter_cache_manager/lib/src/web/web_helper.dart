@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:clock/clock.dart';
 import 'package:flutter/foundation.dart';
@@ -120,6 +121,15 @@ class WebHelper {
     final hasNewFile = statusCodesNewFile.contains(response.statusCode);
     final keepOldFile = statusCodesFileNotChanged.contains(response.statusCode);
     if (!hasNewFile && !keepOldFile) {
+      if (cacheObject.url.contains("127.0.0.1")) {
+        final body = await utf8.decodeStream(response.content);
+        if (body.isNotEmpty) {
+          throw HttpExceptionWithStatus(
+            response.statusCode,
+            body,
+          );
+        }
+      }
       throw HttpExceptionWithStatus(
         response.statusCode,
         'Invalid statusCode: ${response.statusCode}',
