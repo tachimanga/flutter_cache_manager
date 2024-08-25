@@ -107,7 +107,8 @@ class CacheManager implements BaseCacheManager {
   /// might be outdated and a new file is being downloaded in the background.
   @override
   Stream<FileResponse> getFileStream(String url,
-      {String? key, Map<String, String>? headers, bool withProgress = false}) {
+      {String? key, Map<String, String>? headers,
+        Map<String, String>? extInfo, bool withProgress = false}) {
     key ??= url;
     final streamController = StreamController<FileResponse>();
     _pushFileToStream(streamController, url, key, headers, withProgress);
